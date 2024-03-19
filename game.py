@@ -3,7 +3,9 @@ class Game:
 
     def __init__(self, players):
         self.players = players
+
         self.num_players = len(players)
+
         self.max_bids = {}
         for team in players[0].get_teams():
             self.max_bids[team] = players[0].get_bid(team)
@@ -19,13 +21,6 @@ class Game:
     def print_team_order(self):
         print(self.team_order)
 
-    # # TODO make sure this gets random person when two players have same budget
-    # def get_richest_player(self):
-    #     budgets = [player.get_budget() for player in self.players]
-    #     max_budget = max(budgets)
-    #     max_budget_index = budgets.index(max_budget)
-    #     return(self.players[max_budget_index], sorted(budgets)[-2] + 0.01)
-
     def print_budgets(self):
         s = "| "
         for player in self.players:
@@ -39,6 +34,8 @@ class Game:
         # go through all teams in order of descending max bid
         for team in self.team_order:
             bids = [player.get_bid(team) for player in self.players]
+            # effective bid for each player is their bid if it is below remaining budget,
+            # else it is their budget
             adj_bids = [bids[i] if bids[i] <= self.players[i].get_budget() else self.players[i].get_budget() for i in range(self.num_players)]
             cost = sorted(adj_bids)[-2] + 0.01
 
@@ -48,14 +45,8 @@ class Game:
 
             # iterate through every player and assign team to winning player
             for i in range(self.num_players):
-                # print("evaluating player " + str(i))
-                # print("winning_index: " + str(winning_index))
 
                 print(self.players[i].get_name() + f" Bid: ${bids[i]:.2f} (${adj_bids[i]:.2f})")
-
-                # if the player cannot afford the cost, they cannot get the team
-                # if self.players[i].get_budget() < cost:
-                #     continue
                 
                 # if player's bid is the running max, assign the team to them
                 if adj_bids[i] > winning_bid:
@@ -74,10 +65,6 @@ class Game:
                             winning_bid = adj_bids[i]
                             winning_index = i
 
-            # if winning_index == -1:
-            #     winning_player, cost = self.get_richest_player()
-            # else:
-
             winning_player = self.players[winning_index]
 
             winning_player.allocate_team(team)
@@ -86,6 +73,10 @@ class Game:
             print(winning_player.get_name() + " gets " + team + f" for ${cost:.2f}")
             self.print_budgets()
             print("---------------")
+
+        for player in self.players:
+            print(player.get_name())
+            print(player.get_allocated_teams())
 
 
 

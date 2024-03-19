@@ -27,6 +27,9 @@ class Owner:
     def allocate_team(self, team):
         self.teams.append(team)
 
+    def get_allocated_teams(self):
+        return(self.teams)
+
     def bill_budget(self, amount):
         self.budget = self.budget - amount
         assert self.budget >= 0
