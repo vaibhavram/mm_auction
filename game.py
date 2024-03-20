@@ -42,18 +42,21 @@ class Game:
         t = 0
         exhausted = False
         while not exhausted:
+
+            # retrieve team that is being bid on
             team = self.team_order[t]
             print(str(t + 1) + " of " + str(num_teams) + ": " + team.upper())
+
+            # retrieve bids for each player
             bids = [player.get_bid(team) for player in self.players]
+
             # effective bid for each player is their bid if it is below remaining budget,
             # else it is their budget
             adj_bids = [bids[k] if bids[k] <= self.players[k].get_budget() else self.players[k].get_budget() for k in range(self.num_players)]
-            # cost = sorted(adj_bids)[-2] + 0.01
             cost = sorted(adj_bids)[-2]
 
             # initialize calculation for owner who wins this team
             winning_bid = 0
-            # winning_index = -1
 
             # iterate through every player and assign team to winning player
             for i in range(self.num_players):
@@ -77,8 +80,11 @@ class Game:
                             winning_bid = adj_bids[i]
                             winning_index = i
 
+            # identify winning player for team
             winning_player = self.players[winning_index]
 
+            # allocate team to winning player
+            # and subtract from budget
             winning_player.allocate_team(team, cost, results)
             winning_player.bill_budget(cost)
 
@@ -91,6 +97,7 @@ class Game:
             t += 1
 
             # check if all but one's budget has been exhausted
+            # and if so exit the auction process
             exhausted_budget_counter = 0
             for player in self.players:
                 if player.get_budget() == 0:
@@ -100,11 +107,16 @@ class Game:
 
         time.sleep(5)
         print("ENTERING DRAFT")
+
         # begin draft for remaining teams
         remaining_teams = self.team_order[t:num_teams]
+
+        # randomly determine draft order
         random.shuffle(self.players)
-        # print("t: " + str(t))
+
         while t < num_teams:
+            # go through each player and give them the remaining
+            # team that they bid the highest on
             for player in self.players:
                 if len(remaining_teams) > 0:
                     team = player.get_most_wanted_remaining_team(remaining_teams)
