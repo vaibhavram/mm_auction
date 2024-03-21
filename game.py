@@ -42,6 +42,7 @@ class Game:
         t = 0
         exhausted = False
         while not exhausted:
+            time.sleep(3)
 
             # retrieve team that is being bid on
             team = self.team_order[t]
